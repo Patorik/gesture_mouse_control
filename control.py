@@ -8,29 +8,33 @@ def passFunction(x):
 cap = cv2.VideoCapture(0)
 cTime = pTime = 0
 
-cv2.namedWindow("Trackbars")
+cv2.namedWindow("HSV Trackbars")
 
-cv2.createTrackbar("L - H", "Trackbars", 0, 179, passFunction)
-cv2.createTrackbar("L - S", "Trackbars", 0, 255, passFunction)
-cv2.createTrackbar("L - V", "Trackbars", 0, 255, passFunction)
-cv2.createTrackbar("U - H", "Trackbars", 179, 179, passFunction)
-cv2.createTrackbar("U - S", "Trackbars", 255, 255, passFunction)
-cv2.createTrackbar("U - V", "Trackbars", 255, 255, passFunction)
+cv2.createTrackbar("L - H", "HSV Trackbars", 0, 179, passFunction)
+cv2.createTrackbar("L - S", "HSV Trackbars", 0, 255, passFunction)
+cv2.createTrackbar("L - V", "HSV Trackbars", 0, 255, passFunction)
+cv2.createTrackbar("U - H", "HSV Trackbars", 179, 179, passFunction)
+cv2.createTrackbar("U - S", "HSV Trackbars", 255, 255, passFunction)
+cv2.createTrackbar("U - V", "HSV Trackbars", 255, 255, passFunction)
 
 while cap.isOpened():
-    l_h = cv2.getTrackbarPos("L - H", "Trackbars")
-    l_s = cv2.getTrackbarPos("L - S", "Trackbars")
-    l_v = cv2.getTrackbarPos("L - V", "Trackbars")    
-    u_h = cv2.getTrackbarPos("U - H", "Trackbars")    
-    u_s = cv2.getTrackbarPos("U - S", "Trackbars")    
-    u_v = cv2.getTrackbarPos("U - V", "Trackbars")    
+    l_h = cv2.getTrackbarPos("L - H", "HSV Trackbars")
+    l_s = cv2.getTrackbarPos("L - S", "HSV Trackbars")
+    l_v = cv2.getTrackbarPos("L - V", "HSV Trackbars")
+    u_h = cv2.getTrackbarPos("U - H", "HSV Trackbars")    
+    u_s = cv2.getTrackbarPos("U - S", "HSV Trackbars")    
+    u_v = cv2.getTrackbarPos("U - V", "HSV Trackbars")
     lower_color = np.array([l_h, l_s, l_v])
     upper_color = np.array([u_h, u_s, u_v])
 
-    print(f"HSV values (lower treshold):{lower_color}")
-    print(f"HSV values (upper treshold):{upper_color}")
+    # print(f"HSV values (lower treshold):{lower_color}")
+    # print(f"HSV values (upper treshold):{upper_color}")
     
     ret, frame = cap.read()
+
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv_frame, lower_color, upper_color)
+    visible_frame = cv2.bitwise_and(frame, frame, mask=mask)
 
     if not ret:
         break
@@ -41,7 +45,9 @@ while cap.isOpened():
     pTime = cTime
 
     cv2.putText(frame, str(fps), (10, 70), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 255), 3)
-    cv2.imshow("Cameraframe", frame)
+    cv2.imshow("Camera frame", frame)
+    cv2.imshow("HSV frame", mask)
+    cv2.imshow("Masked frame", visible_frame)
 
     key = cv2.waitKey(1)
 
