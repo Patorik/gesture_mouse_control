@@ -44,6 +44,9 @@ while cap.isOpened():
     fps = int(1/(cTime-pTime))
     pTime = cTime
 
+    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
+
     cv2.putText(frame, str(fps), (10, 70), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 255), 3)
     cv2.imshow("Camera frame", frame)
     cv2.imshow("HSV frame", mask)
