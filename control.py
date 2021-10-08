@@ -1,11 +1,13 @@
 import cv2
 import time
 import numpy as np
+import mouse
 
 def passFunction(x):
     pass
 
 cap = cv2.VideoCapture(0)
+
 cTime = pTime = 0
 
 cv2.namedWindow("HSV Trackbars")
@@ -31,11 +33,11 @@ while cap.isOpened():
     # print(f"HSV values (upper treshold):{upper_color}")
     
     ret, frame = cap.read()
-    frame = cv2.GaussianBlur(frame, (9,9), 0)
-
-    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#    blurred_frame = cv2.GaussianBlur(frame, (9,9), 0)
+    blurred_frame = cv2.medianBlur(frame, 9)
+    hsv_frame = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv_frame, lower_color, upper_color)
-    visible_frame = cv2.bitwise_and(frame, frame, mask=mask)
+    visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=mask)
 
     if not ret:
         break
