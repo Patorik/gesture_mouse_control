@@ -1,11 +1,13 @@
 import cv2
 import time
 import numpy as np
+import mouse
 
 def passFunction(x):
     pass
 
 cap = cv2.VideoCapture(0)
+res = np.zeros([int(cap.get(4)), int(cap.get(3))], dtype='uint8')
 cTime = pTime = 0
 
 cv2.namedWindow("HSV Trackbars")
@@ -52,11 +54,14 @@ while cap.isOpened():
         try:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-            if cv2.contourArea(contour) > 2500 and cv2.contourArea(contour) < 20000:
+            if cv2.contourArea(contour) > 3000 and cv2.contourArea(contour) < 20000:
                 #cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
                 x, y, w, h = cv2.boundingRect(contour)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
                 cv2.circle(frame, (cX, cY), 7, (255, 255, 255), -1)
+                maskb = np.zeros([int(cap.get(4)), int(cap.get(3))], np.uint8)
+                cv2.drawContours(maskb, [contour], -1, 255, thickness=cv2.FILLED)
+                res = cv2.bitwise_and(mask, mask, mask=maskb)
                 print(cX, cY)
         except:
             if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
@@ -66,6 +71,7 @@ while cap.isOpened():
     cv2.imshow("Camera frame", frame)
     cv2.imshow("HSV frame", mask)
     cv2.imshow("Masked frame", visible_frame)
+    cv2.imshow("Result", res)
 
     key = cv2.waitKey(1)
 
