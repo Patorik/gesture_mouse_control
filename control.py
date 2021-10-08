@@ -31,7 +31,7 @@ while cap.isOpened():
     # print(f"HSV values (upper treshold):{upper_color}")
     
     ret, frame = cap.read()
-    frame = cv2.GaussianBlur(frame, (5,5), 0)
+    frame = cv2.GaussianBlur(frame, (9,9), 0)
 
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv_frame, lower_color, upper_color)
@@ -52,9 +52,12 @@ while cap.isOpened():
         try:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-            if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
-                cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
+            if cv2.contourArea(contour) > 2500 and cv2.contourArea(contour) < 20000:
+                #cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
+                x, y, w, h = cv2.boundingRect(contour)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
                 cv2.circle(frame, (cX, cY), 7, (255, 255, 255), -1)
+                print(cX, cY)
         except:
             if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
                 cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
