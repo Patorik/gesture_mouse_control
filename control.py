@@ -62,6 +62,7 @@ while cap.isOpened():
                 maskb = np.zeros([int(cap.get(4)), int(cap.get(3))], np.uint8)
                 cv2.drawContours(maskb, [contour], -1, 255, thickness=cv2.FILLED)
                 res = cv2.bitwise_and(mask, mask, mask=maskb)
+                visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=maskb)
                 print(cX, cY)
         except:
             if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
