@@ -1,5 +1,6 @@
-*.tex
-*.log
-*.gz
-*.aux
-*.toc
+*
+!**/
+
+!**/*.py
+!**/*.md
+!gesture_mouse_control.pdf

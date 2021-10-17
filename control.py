@@ -32,8 +32,8 @@ while cap.isOpened():
     upper_color = np.array([u_h, u_s, u_v])
     
     # Predefined values for trackbars
-    #lower_color = np.array([25, 43, 0])
-    #upper_color = np.array([60, 217, 255])
+    #lower_color = np.array([26, 21, 93])
+    #upper_color = np.array([52, 255, 255])
 
     # print(f"HSV values (lower treshold):{lower_color}")
     # print(f"HSV values (upper treshold):{upper_color}")
