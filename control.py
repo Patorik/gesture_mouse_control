@@ -28,6 +28,16 @@ class Controller:
         result = str(l_h) + "\n" + str(l_s) + "\n" + str(l_v) + "\n" + str(u_h) + "\n" + str(u_s) + "\n" + str(u_v)
         with open("HSV_DATA.txt", "w") as file:
             file.write(result)
+    
+    def readHSVData(self):
+        data = []
+        with open("HSV_DATA.txt", "r") as file:
+            data = file.read().rstrip('\n').split('\n')
+        i = 0
+        while i<len(data):
+            data[i] = int(data[i])
+            i+=1
+        return data
 
     def detectAndControl(self):
         while self.cap.isOpened():
@@ -42,14 +52,14 @@ class Controller:
                 u_h = cv2.getTrackbarPos("U - H", "HSV Trackbars")    
                 u_s = cv2.getTrackbarPos("U - S", "HSV Trackbars")    
                 u_v = cv2.getTrackbarPos("U - V", "HSV Trackbars")
-
-                lower_color = np.array([l_h, l_s, l_v])
-                upper_color = np.array([u_h, u_s, u_v])
             else:
                 # Predefined values for trackbars
-                lower_color = np.array([26, 21, 93])
-                upper_color = np.array([52, 255, 255])
+                l_h, l_s, l_v, u_h, u_s, u_v = self.readHSVData()
+                #lower_color = np.array([26, 21, 93])
+                #upper_color = np.array([52, 255, 255])
 
+            lower_color = np.array([l_h, l_s, l_v])
+            upper_color = np.array([u_h, u_s, u_v])
             # print(f"HSV values (lower treshold):{lower_color}")
             # print(f"HSV values (upper treshold):{upper_color}")
 
