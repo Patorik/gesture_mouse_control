@@ -4,7 +4,6 @@ import numpy as np
 import autopy as ap
 import argparse
 
-
 class Controller:
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
@@ -96,7 +95,7 @@ class Controller:
                         cv2.drawContours(maskb, [contour], -1, 255, thickness=cv2.FILLED)
                         self.res = cv2.bitwise_and(mask, mask, mask=maskb)
                         visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=maskb)
-                        print(cX, cY)
+                        print(self.tX*cX, self.tY*cY)
                         if not args.setup:
                             ap.mouse.move(cX*self.tX,cY*self.tY)
                         pass
