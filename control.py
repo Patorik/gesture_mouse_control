@@ -3,19 +3,21 @@ import time
 import numpy as np
 import autopy as ap
 import argparse
+from screeninfo import get_monitors
 
 class Controller:
     def __init__(self):
+        self.screen = get_monitors()[0]
         self.cap = cv2.VideoCapture(0)
         self.res = np.zeros([int(self.cap.get(4)), int(self.cap.get(3))], dtype='uint8')
-        self.tX, self.tY = 1920/self.cap.get(3), 1080/self.cap.get(4)
+        self.tX, self.tY = self.screen.width/self.cap.get(3), self.screen.height/self.cap.get(4)
 
     def passFunction(self, x):
         pass
 
     def initTrackbar(self):
         cv2.namedWindow("HSV Trackbars")
-        cv2.moveWindow("HSV Trackbars", 800, 400)
+        cv2.moveWindow("HSV Trackbars", int(self.screen.width/2.5), int(self.screen.height/2.5))
         cv2.createTrackbar("L - H", "HSV Trackbars", 0, 179, self.passFunction)
         cv2.createTrackbar("L - S", "HSV Trackbars", 0, 255, self.passFunction)
         cv2.createTrackbar("L - V", "HSV Trackbars", 0, 255, self.passFunction)
@@ -95,7 +97,7 @@ class Controller:
                         cv2.drawContours(maskb, [contour], -1, 255, thickness=cv2.FILLED)
                         self.res = cv2.bitwise_and(mask, mask, mask=maskb)
                         visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=maskb)
-                        print(self.tX*cX, self.tY*cY)
+                        #print(self.tX*cX, self.tY*cY)
                         if not args.setup:
                             ap.mouse.move(cX*self.tX,cY*self.tY)
                         pass
@@ -109,9 +111,9 @@ class Controller:
             cv2.imshow("Masked frame", visible_frame)
             cv2.imshow("Result", self.res)
             cv2.moveWindow("Camera frame", 0, 0)
-            cv2.moveWindow("Masked frame", 0, 500)
-            cv2.moveWindow("Result", 1600, 500)
-            cv2.moveWindow("HSV frame", 1600,0)
+            cv2.moveWindow("Masked frame", 0, int(self.screen.height-self.cap.get(4)))
+            cv2.moveWindow("Result", int(self.screen.width-self.cap.get(3)), int(self.screen.height-self.cap.get(4)))
+            cv2.moveWindow("HSV frame", int(self.screen.width-self.cap.get(3)),0)
 
             key = cv2.waitKey(1)
 
