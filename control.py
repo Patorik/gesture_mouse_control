@@ -41,10 +41,9 @@ class Controller:
         return data
 
     def detectAndControl(self):
+        cTime = 0
+        pTime = 0
         while self.cap.isOpened():
-
-            cTime = 0
-            pTime = 0
             
             if args.setup:
                 l_h = cv2.getTrackbarPos("L - H", "HSV Trackbars")
@@ -80,7 +79,7 @@ class Controller:
             cTime = time.time()
             fps = int(1/(cTime-pTime))
             pTime = cTime
-
+            cv2.putText(frame, str(fps), (10, 70), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 255), 3)
             contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
             for contour in contours:
@@ -105,7 +104,6 @@ class Controller:
                     if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
                         cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
 
-            cv2.putText(frame, str(fps), (10, 70), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 255), 3)
             cv2.imshow("Camera frame", frame)
             cv2.imshow("HSV frame", mask)
             cv2.imshow("Masked frame", visible_frame)
