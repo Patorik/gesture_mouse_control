@@ -9,6 +9,8 @@ This repository makes it possible to control mouse using object detection based 
 - numpy (1.20.3)
 - screeninfo package
 - camera for input image
+To install these *packages* you only need to use *requirements.txt* with the pip package manager like in the following code:<br>
+`python3 -m pip install requirements.txt`
 
 ## How to use
 To get the detection work you need to set up the software's HSV values using the trackbars. To start the software in "setup mode" you need to launch it with the following arguments:<br>
