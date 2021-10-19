@@ -4,10 +4,12 @@ import numpy as np
 import autopy as ap
 import argparse
 from screeninfo import get_monitors
+import os
 
 class Controller:
     def __init__(self):
         self.screen = get_monitors()[0]
+        self.toggleSave = False
         self.cap = cv2.VideoCapture(0)
         self.res = np.zeros([int(self.cap.get(4)), int(self.cap.get(3))], dtype='uint8')
         self.tX, self.tY = self.screen.width/self.cap.get(3), self.screen.height/self.cap.get(4)
@@ -24,6 +26,9 @@ class Controller:
         cv2.createTrackbar("U - H", "HSV Trackbars", 179, 179, self.passFunction)
         cv2.createTrackbar("U - S", "HSV Trackbars", 255, 255, self.passFunction)
         cv2.createTrackbar("U - V", "HSV Trackbars", 255, 255, self.passFunction)
+
+    def triggerSave(self):
+        self.toggleSave = True
 
     def saveHSVData(self, l_h, l_s, l_v, u_h, u_s, u_v):
         result = str(l_h) + "\n" + str(l_s) + "\n" + str(l_v) + "\n" + str(u_h) + "\n" + str(u_s) + "\n" + str(u_v)
@@ -45,7 +50,7 @@ class Controller:
         pTime = 0
         while self.cap.isOpened():
             
-            if args.setup:
+            if self.toggleSave:
                 l_h = cv2.getTrackbarPos("L - H", "HSV Trackbars")
                 l_s = cv2.getTrackbarPos("L - S", "HSV Trackbars")
                 l_v = cv2.getTrackbarPos("L - V", "HSV Trackbars")
@@ -55,8 +60,6 @@ class Controller:
             else:
                 # Predefined values for trackbars
                 l_h, l_s, l_v, u_h, u_s, u_v = self.readHSVData()
-                #lower_color = np.array([26, 21, 93])
-                #upper_color = np.array([52, 255, 255])
 
             lower_color = np.array([l_h, l_s, l_v])
             upper_color = np.array([u_h, u_s, u_v])
@@ -64,17 +67,18 @@ class Controller:
             # print(f"HSV values (upper treshold):{upper_color}")
 
             ret, frame = self.cap.read()
+            if not ret:
+                break
+                print("Could not read more frames")
             frame = cv2.flip(frame, 1)
 
-        #    blurred_frame = cv2.GaussianBlur(frame, (9,9), 0)
+            # blurred_frame = cv2.GaussianBlur(frame, (9,9), 0)
             blurred_frame = cv2.medianBlur(frame, 9)
             hsv_frame = cv2.cvtColor(blurred_frame, cv2.COLOR_BGR2HSV)
             mask = cv2.inRange(hsv_frame, lower_color, upper_color)
             visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=mask)
 
-            if not ret:
-                break
-                print("Could not read more frames")
+
 
             cTime = time.time()
             fps = int(1/(cTime-pTime))
@@ -97,7 +101,7 @@ class Controller:
                         self.res = cv2.bitwise_and(mask, mask, mask=maskb)
                         visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=maskb)
                         #print(self.tX*cX, self.tY*cY)
-                        if not args.setup:
+                        if not self.toggleSave:
                             ap.mouse.move(cX*self.tX,cY*self.tY)
                         pass
                 except:
@@ -118,7 +122,7 @@ class Controller:
             if key==ord('q'):
                 break
         
-        if args.setup:
+        if self.toggleSave:
             self.saveHSVData(l_h, l_s, l_v, u_h, u_s, u_v)
         
         self.cap.release()
@@ -128,8 +132,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--setup', action='store_true', help="This argument tells if we're in testig mode or not.")
     args = parser.parse_args()
+    if not os.path.isfile('HSV_DATA.txt'):
+        ap.alert.alert("""Welcome!
+        This software is a project for Computer Vision subject in my university.
+        Let's get Started!
+        First you need to set up the upper and lower limits of HSV values. Use the trackbars!
+        After you've done it press 'q' and restart the program.
+        """)
     controller = Controller()
-    if args.setup:
+    if args.setup or not os.path.isfile('HSV_DATA.txt'):
+        controller.triggerSave()
         controller.initTrackbar()
         controller.detectAndControl()
     else:
