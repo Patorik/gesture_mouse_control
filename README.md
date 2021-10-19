@@ -8,7 +8,8 @@ This repository makes it possible to control mouse using object detection based 
 - autopy (4.0.0)
 - numpy (1.20.3)
 - screeninfo package
-- camera for input image
+- camera for input image<br>
+
 To install these *packages* you only need to use *requirements.txt* with the pip package manager like in the following code:<br>
 `python3 -m pip install requirements.txt`
 
