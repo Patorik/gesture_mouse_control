@@ -4,3 +4,4 @@
 !**/*.py
 !**/*.md
 !gesture_mouse_control.pdf
+!requirements.txt
