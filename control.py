@@ -79,7 +79,6 @@ class Controller:
             visible_frame = cv2.bitwise_and(blurred_frame, blurred_frame, mask=mask)
 
 
-
             cTime = time.time()
             fps = int(1/(cTime-pTime))
             pTime = cTime
