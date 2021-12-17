@@ -8,11 +8,16 @@ import os
 
 class Controller:
     def __init__(self):
+        self.capResolution = (640, 360)
         self.screen = get_monitors()[0]
         self.toggleSave = False
         self.cap = cv2.VideoCapture(0)
-        self.res = np.zeros([int(self.cap.get(4)), int(self.cap.get(3))], dtype='uint8')
-        self.tX, self.tY = self.screen.width/self.cap.get(3), self.screen.height/self.cap.get(4)
+        ratio = (self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)/self.capResolution[0] , self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)/self.capResolution[1])
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.capResolution[1])
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.capResolution[0])
+        self.cap.set(cv2.CAP_PROP_FPS, 30)
+        self.res = np.zeros([self.capResolution[1], self.capResolution[0]], dtype='uint8')
+        self.tX, self.tY = self.screen.width/self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)*ratio[0], self.screen.height/self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)*ratio[1]
 
     def passFunction(self, x):
         pass
@@ -106,15 +111,16 @@ class Controller:
                 except:
                     if cv2.contourArea(contour) > 1000 and cv2.contourArea(contour) < 20000:
                         cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
-
+            
             cv2.imshow("Camera frame", frame)
             cv2.imshow("HSV frame", mask)
             cv2.imshow("Masked frame", visible_frame)
             cv2.imshow("Result", self.res)
+
             cv2.moveWindow("Camera frame", 0, 0)
-            cv2.moveWindow("Masked frame", 0, int(self.screen.height-self.cap.get(4)))
-            cv2.moveWindow("Result", int(self.screen.width-self.cap.get(3)), int(self.screen.height-self.cap.get(4)))
-            cv2.moveWindow("HSV frame", int(self.screen.width-self.cap.get(3)),0)
+            cv2.moveWindow("HSV frame", int(self.screen.width-self.capResolution[0]),0)
+            cv2.moveWindow("Masked frame", 0, int(self.screen.height-self.capResolution[1]))
+            cv2.moveWindow("Result", int(self.screen.width-self.capResolution[0]), int(self.screen.height-self.capResolution[1]))
 
             key = cv2.waitKey(1)
 
