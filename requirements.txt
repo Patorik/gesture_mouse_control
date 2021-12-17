@@ -1,4 +1,4 @@
 opencv-contrib-python==4.5.2.54
 autopy==4.0.0
 numpy==1.20.3
-screeninfo
+screeninfo==0.8
